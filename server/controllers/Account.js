@@ -58,10 +58,42 @@ const signup = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const username = `${req.body.username}`;
+  const oldPass = `${req.body.oldPass}`;
+  const newPass = `${req.body.newPass}`;
+  const newPass2 = `${req.body.newPass2}`;
+
+  if (!username || !oldPass || !newPass || !newPass2) {
+    return res.status(400).json({ error: 'All fields are required!' });
+  }
+
+  return Account.authenticate(username, oldPass, async (err, account) => {
+    if (err || !account) {
+      return res.status(401).json({ error: 'Wrong username or password!' });
+    }
+
+    if (newPass !== newPass2) {
+      return res.status(400).json({ error: 'Passwords do not match!' });
+    }
+  
+    try {
+      const hash = await Account.generateHash(newPass);
+      account.password = hash;
+      await account.save();
+      return res.redirect('/');
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred.' });
+    }
+  });
+}
+
 module.exports = {
   getToken,
   loginPage,
   login,
   logout,
   signup,
+  changePassword
 };

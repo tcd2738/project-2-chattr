@@ -40,6 +40,29 @@ const SignupWindow = (props) => {
     );
 };
 
+const ChangePasswordWindow = (props) => {
+    return (
+        <form id="changePasswordForm"
+            name="changePasswordForm"
+            onSubmit={handlePasswordChange}
+            action="/changePassword"
+            method="POST"
+            className="mainForm"
+        >
+            <label htmlFor="username">Username: </label>
+            <input id="user" type="text" name="username" placeholder="username" />
+            <label htmlFor="oldPass">Old Password: </label>
+            <input id="oldPass" type="password" name="oldPass" placeholder="old password" />
+            <label htmlFor="newPass">New Password: </label>
+            <input id="newPass" type="password" name="newPass" placeholder="new password" />
+            <label htmlFor="newPass2">New Password: </label>
+            <input id="newPass2" type="password" name="newPass2" placeholder="retype new password" />
+            <input id="_csrf" type="hidden" name="_csrf" value={props.csrf} />
+            <input className="formSubmit" type="submit" value="Change Password" />
+        </form>
+    );  
+}
+
 const handleLogin = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -80,12 +103,37 @@ const handleSignup = (e) => {
     return false;
 };
 
+const handlePasswordChange = (e) => {
+    e.preventDefault();
+    helper.hideError();
+
+    const username = e.target.querySelector('#user').value;
+    const oldPass = e.target.querySelector('#oldPass').value;
+    const newPass = e.target.querySelector('#newPass').value;
+    const newPass2 = e.target.querySelector('#newPass2').value;
+    const _csrf = e.target.querySelector('#_csrf').value;
+
+    if (!username || !oldPass ||!newPass || !newPass2) {
+        helper.handleError('All fields are required!');
+        return false;
+    }
+
+    if (newPass != newPass2) {
+        helper.handleError('New passwords do not match!');
+        return false;
+    }
+
+    helper.sendPost(e.target.action, {username, oldPass, newPass, newPass2, _csrf});
+    return false;
+}
+
 const init = async () => {
     const response = await fetch('/getToken');
     const data = await response.json();
 
     const loginButton = document.getElementById('loginButton');
     const signupButton = document.getElementById('signupButton');
+    const changePasswordButton = document.getElementById('changePasswordButton');
 
     loginButton.addEventListener('click', (e) => {
         e.preventDefault();
@@ -97,6 +145,13 @@ const init = async () => {
     signupButton.addEventListener('click', (e) => {
         e.preventDefault();
         ReactDOM.render(<SignupWindow csrf={data.csrfToken} />,
+        document.getElementById('content'));
+        return false;
+    });
+
+    changePasswordButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        ReactDOM.render(<ChangePasswordWindow csrf={data.csrfToken} />,
         document.getElementById('content'));
         return false;
     });
