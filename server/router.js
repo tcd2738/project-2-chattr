@@ -11,7 +11,11 @@ const router = (app) => {
 
   app.post('/changePassword', controllers.Account.changePassword);
 
+  app.post('/setPremium', mid.requiresLogin, controllers.Account.setPremium);
+
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
+
+  app.get('/maker', mid.requiresLogin, controllers.Account.appPage);
 
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
 };

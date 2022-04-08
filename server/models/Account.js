@@ -33,15 +33,21 @@ const AccountSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isPremium: {
+    type: Boolean,
+    default: false,
+    required: true
+  },
   createdDate: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
 // Converts a doc to something we can store in redis later on.
 AccountSchema.statics.toAPI = (doc) => ({
   username: doc.username,
+  isPremium: doc.isPremium,
   _id: doc._id,
 });
 

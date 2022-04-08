@@ -5,6 +5,8 @@ const { Account } = models;
 const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });
 
 const loginPage = (req, res) => res.render('login', { csrfToken: req.csrfToken() });
+// temporary for testing
+const appPage = (req, res) => res.render('app');
 
 const logout = (req, res) => {
   req.session.destroy();
@@ -81,7 +83,34 @@ const changePassword = async (req, res) => {
       const hash = await Account.generateHash(newPass);
       account.password = hash;
       await account.save();
-      return res.redirect('/');
+      return res.json({ redirect: '/maker' });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred.' });
+    }
+  });
+};
+
+const setPremium = async (req, res) => {
+  const username = `${req.body.username}`;
+  const pass = `${req.body.pass}`;
+  const premium = req.body.premium;
+
+  if (!username || !pass || premium === null) {
+    return res.status(400).json({ error: 'All fields are required!' });
+  }
+
+  return Account.authenticate(username, pass, async (err, account) => {
+    if (err || !account) {
+      return res.status(401).json({ error: 'Wrong username or password!' });
+    }
+  
+    try {
+      account.isPremium = premium;
+      req.session.account.isPremium = premium;
+      await account.save();
+      
+      return res.status(200).json({ redirect: '/maker' });
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred.' });
@@ -92,8 +121,10 @@ const changePassword = async (req, res) => {
 module.exports = {
   getToken,
   loginPage,
+  appPage,
   login,
   logout,
   signup,
-  changePassword
+  changePassword,
+  setPremium
 };
