@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
     entry: {
+        app: './client/app.jsx',
         premium: './client/app/premium.jsx',
         quote: './client/app/quote.jsx',
         jar: './client/app/jar.jsx',
@@ -18,7 +19,7 @@ module.exports = {
             }
         ]
     },
-    mode: 'production',
+    mode: 'development',
     watchOptions: {
         aggregateTimeout: 200,
     },

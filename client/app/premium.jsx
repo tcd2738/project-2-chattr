@@ -1,11 +1,5 @@
 const helper = require('../helper.js');
 
-const PremiumButton = () => {
-    return (
-        <button onClick={openPremiumWindow}>Change premium status?</button>
-    );
-};
-
 const PremiumWindow = (props) => {
     return (
         <form id="PremiumForm"
@@ -15,6 +9,7 @@ const PremiumWindow = (props) => {
             method="POST"
             className="mainForm"
         >
+            <h2>Change Your Premium Status?</h2>
             <label htmlFor="username">Username: </label>
             <input id="user" type="text" name="username" placeholder="username" />
             <label htmlFor="pass">Password: </label>
@@ -30,15 +25,6 @@ const PremiumWindow = (props) => {
         </form>
     );
 }
-
-const openPremiumWindow = async (e) => {
-    const response = await fetch('/getToken');
-    const data = await response.json();
-
-    ReactDOM.render(<PremiumWindow csrf={data.csrfToken} />,
-    document.getElementById('premium'));
-    return false;
-};
 
 const handlePremium = (e) => {
     e.preventDefault();
@@ -62,17 +48,9 @@ const handlePremium = (e) => {
         return false;
     }
 
-    helper.sendPost(e.target.action, {username, pass, premium, _csrf}, (res) => {
-        if(res.status === 200) {
-            ReactDOM.render(<PremiumButton/>, document.getElementById('premium'));
-        }
-    });
+    helper.sendPost(e.target.action, {username, pass, premium, _csrf});
 
     return false;
 }
 
-const init = async () => {
-    ReactDOM.render(<PremiumButton/>, document.getElementById('premium'));
-};
-
-window.onload = init;
+module.exports = { PremiumWindow };

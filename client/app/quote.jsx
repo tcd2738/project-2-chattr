@@ -1,6 +1,6 @@
 const helper = require('../helper.js');
 
-const LocationQuoteForm = (props) => {
+const LocationQuoteWindow = (props) => {
     return (
     <form id="lqForm"
         onSubmit={handleLocationQuote}
@@ -9,6 +9,7 @@ const LocationQuoteForm = (props) => {
         method="POST"
         className="lqForm"
     >
+        <h1>Add a Location-based Quote:</h1>
         <label htmlFor="quoteCopy">Quote: </label>
         <input id="quoteCopy" type="text" name="quoteCopy" placeholder="What'd you hear?" />
         <input id="_csrf" type="hidden" name="_csrf" value={props.csrf} />
@@ -33,15 +34,5 @@ const handleLocationQuote = async (e) => {
     return false;
 };
 
-const init = async () => {
-    const response = await fetch('/getToken');
-    const data = await response.json();
-
-    ReactDOM.render(
-        <LocationQuoteForm csrf={data.csrfToken} />,
-        document.getElementById('locationJarQuote')
-    );
-};
-
-window.onload = init;
+module.exports = { LocationQuoteWindow };
 

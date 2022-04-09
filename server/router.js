@@ -11,7 +11,7 @@ const router = (app) => {
 
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
 
-  app.post('/changePassword', controllers.Account.changePassword);
+  app.post('/changePassword', mid.requiresSecure, mid.requiresLogout, controllers.Account.changePassword);
 
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
 
@@ -19,6 +19,10 @@ const router = (app) => {
 
   app.post('/addQuote', mid.requiresLogin, controllers.Quote.makeQuote);
   app.post('/addLocationQuote', mid.requiresLogin, controllers.Quote.makeQuote);
+
+  app.post('/makeJar', mid.requiresLogin, controllers.Jar.makeJar);
+
+  app.get('/getJars', mid.requiresLogin, controllers.Jar.getJars);
   
   app.post('/setPremium', mid.requiresLogin, controllers.Account.setPremium);
 };

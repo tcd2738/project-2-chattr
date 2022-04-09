@@ -9,27 +9,21 @@
 </head>
 <body>
   <nav><a href="/login"><img id="logo" src="/assets/img/face.png" alt="face logo"/></a>
-    <div class="navlink"><a id="changePasswordButton" href="/changePassword">Change Password</a></div>
+    <div class="navlink"><a id="makeJarButton" href="/makeJar">Create a Jar</a></div>
+    <div class="navlink"><a id="premiumButton" href="/setPremium">Change Premium Status</a></div>
     <div class="navlink"><a id="logoutButton" href="/logout">Log out</a></div>
   </nav>
 
-  <h1>Add a Location-based Quote:</h1>
-  <section id="locationJarQuote"></section>
-  <h1>Quotes from your Current Location: </h1>
-  <section id="locationJar"></section>
-
-  <h1>Your Private Jars:</h1>
-  <section id="personalJarSelector"></section>
-  
-  <h2>Upgrade to premium?</h2>
-  <section id="premium"></section>
+  <section id="content"></section>
+  <section id="content2"></section>
 
   <div id="errorMessage" class='hidden'>
     <img id="speech" src="/assets/img/speech.png" alt="speech box"/>
     <h3><span id="errorText"></span></h3>
   </div>
+  <script src="/assets/appBundle.js"></script>
   <script src="/assets/premiumBundle.js"></script>
-    <script src="/assets/quoteBundle.js"></script>
-      <script src="/assets/jarBundle.js"></script>
+  <script src="/assets/quoteBundle.js"></script>
+  <script src="/assets/jarBundle.js"></script>
 </body>
 </html>

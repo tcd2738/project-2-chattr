@@ -4,13 +4,17 @@ const QuoteModel = require('../models/Quote');
 const { Quote } = models;
 
 const makeQuote = async (req, res) => {
-    if (!req.body.quoteCopy || !req.session.account.username) {
+
+    const quoteCopy = `${req.body.quoteCopy}`;
+    const username = `${req.session.account.username}`;
+
+    if (!quoteCopy || !username) {
         return res.status(400).json({ error: 'All attributes are required!' });
     }
 
     const quoteData = {
-        quoteCopy: req.body.quoteCopy,
-        owner: req.session.account.username
+        quoteCopy: quoteCopy,
+        owner: username
     };
 
     try {
@@ -21,9 +25,6 @@ const makeQuote = async (req, res) => {
         );
     } catch (err) {
         console.log(err);
-        if (err.code === 11000) {
-          return res.status(400).json({ error: 'Domo already exists! ' });
-        }
         return res.status(400).json({ error: 'An error occured.' });
     }
 }
