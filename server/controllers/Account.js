@@ -5,7 +5,7 @@ const { Account } = models;
 const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });
 
 const loginPage = (req, res) => res.render('login', { csrfToken: req.csrfToken() });
-// temporary for testing
+
 const appPage = (req, res) => res.render('app');
 
 const logout = (req, res) => {
@@ -28,7 +28,7 @@ const login = (req, res) => {
 
     req.session.account = Account.toAPI(account);
 
-    return res.json({ redirect: '/maker' });
+    return res.json({ redirect: '/app' });
   });
 };
 
@@ -50,7 +50,7 @@ const signup = async (req, res) => {
     const newAccount = new Account({ username, password: hash });
     await newAccount.save();
     req.session.account = Account.toAPI(newAccount);
-    return res.json({ redirect: '/maker' });
+    return res.json({ redirect: '/app' });
   } catch (err) {
     console.log(err);
     if (err.code === 11000) {
@@ -83,7 +83,7 @@ const changePassword = async (req, res) => {
       const hash = await Account.generateHash(newPass);
       account.password = hash;
       await account.save();
-      return res.json({ redirect: '/maker' });
+      return res.json({ redirect: '/app' });
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred.' });
@@ -110,7 +110,7 @@ const setPremium = async (req, res) => {
       req.session.account.isPremium = premium;
       await account.save();
       
-      return res.status(200).json({ redirect: '/maker' });
+      return res.status(200).json({ redirect: '/app' });
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred.' });
