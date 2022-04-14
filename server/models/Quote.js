@@ -13,8 +13,14 @@ const QuoteSchema = new mongoose.Schema({
         required: true,
     },
     location: {
-        type: String,
-        default: null
+        latitude: {
+            type: String,
+            required: false
+        },
+        longitude: {
+            type: String,
+            required: false
+        }
     },
     createdDate: {
         type: Date,
@@ -22,10 +28,12 @@ const QuoteSchema = new mongoose.Schema({
     }
 });
 
+// Converts a doc to something we can store in redis later on.
 QuoteSchema.statics.toAPI = (doc) => ({
     quoteCopy: doc.quoteCopy,
     owner: doc.owner,
-    location: doc.location
+    location: doc.location,
+    _id: doc._id
 });
 
 QuoteModel = mongoose.model('Quote', QuoteSchema);

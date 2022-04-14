@@ -1,5 +1,6 @@
 const helper = require('../helper.js');
 
+// Window that displays form for adding public (location-based) quotes.
 const LocationQuoteWindow = (props) => {
     return (
     <form id="lqForm"
@@ -17,6 +18,7 @@ const LocationQuoteWindow = (props) => {
     </form>
 )};
 
+// Add quote to MongoDB based off of location quote form.
 const handleLocationQuote = async (e) => {
     e.preventDefault();
     helper.hideError();
@@ -29,9 +31,15 @@ const handleLocationQuote = async (e) => {
         return false;  
     }
 
-    await helper.sendPost(e.target.action, {quoteCopy, _csrf});
-    // loadLocationQuotesFromServer(_csrf);
-    return false;
+    // Check for location and send quote if successful.
+    const location = await helper.getLocation();
+    if (location !== undefined) {
+        helper.sendPost(e.target.action, {quoteCopy, location, _csrf});
+        return false;
+    } else {
+        helper.handleError("Unable to access your location!");
+        return false;
+    }
 };
 
 module.exports = { LocationQuoteWindow };

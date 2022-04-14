@@ -25,6 +25,7 @@ const JarSchema = new mongoose.Schema({
     }
 });
 
+// Converts a doc to something we can store in redis later on.
 JarSchema.statics.toAPI = (doc) => ({
     jarName: doc.jarName,
     quotes: doc.quotes,
@@ -32,6 +33,7 @@ JarSchema.statics.toAPI = (doc) => ({
     users: users.owner
 });
 
+// Locate jars related to a specific user.
 JarSchema.statics.findByUser = (userId, callback) => {
     const search = {
       // Convert the string ownerId to an object id

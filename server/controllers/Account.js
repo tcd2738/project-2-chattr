@@ -1,18 +1,22 @@
 const models = require('../models');
-
 const { Account } = models;
 
+// Gets the security token from the server.
 const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });
 
+// Displays the 'login' page if the security token is foun.d
 const loginPage = (req, res) => res.render('login', { csrfToken: req.csrfToken() });
 
+// Displays the app page.
 const appPage = (req, res) => res.render('app');
 
+// Logs out the user and redirects back to the login page.
 const logout = (req, res) => {
   req.session.destroy();
   return res.redirect('/');
 };
 
+// Logs the user in if the provided account info is correct.
 const login = (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -32,6 +36,7 @@ const login = (req, res) => {
   });
 };
 
+// Creates an account and adds it to the MongoDB.
 const signup = async (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -60,6 +65,7 @@ const signup = async (req, res) => {
   }
 };
 
+// Changes the password of an account if the provided account info is correct.
 const changePassword = async (req, res) => {
   const username = `${req.body.username}`;
   const oldPass = `${req.body.oldPass}`;
@@ -91,6 +97,7 @@ const changePassword = async (req, res) => {
   });
 };
 
+// Changes an account's premium status if the provided account info is correct.
 const setPremium = async (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
@@ -107,8 +114,10 @@ const setPremium = async (req, res) => {
   
     try {
       account.isPremium = premium;
-      req.session.account.isPremium = premium;
       await account.save();
+
+      // Change is also made to the session object manually to keep things accurate.
+      req.session.account.isPremium = premium;
       
       return res.status(200).json({ redirect: '/app' });
     } catch (err) {

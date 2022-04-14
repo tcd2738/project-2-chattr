@@ -1,5 +1,6 @@
 const helper = require('../helper.js');
 
+// Window that displays form for changing a user's premium status.
 const PremiumWindow = (props) => {
     return (
         <form id="PremiumForm"
@@ -26,6 +27,7 @@ const PremiumWindow = (props) => {
     );
 }
 
+// Change user's premium status based on premium form.
 const handlePremium = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -34,6 +36,7 @@ const handlePremium = (e) => {
     const pass = e.target.querySelector('#pass').value;
     const _csrf = e.target.querySelector('#_csrf').value;
 
+    // Search through premium form radio buttons to find selected value.
     const premiumField = document.getElementsByName('premiumChoice');
     let premium;
     for (let p of premiumField)
@@ -48,7 +51,7 @@ const handlePremium = (e) => {
         return false;
     }
 
-    helper.sendPost(e.target.action, {username, pass, premium, _csrf});
+    helper.sendRequest('PUT', e.target.action, {username, pass, premium, _csrf});
 
     return false;
 }

@@ -1,5 +1,6 @@
 const helper = require('./helper.js');
 
+// Window that displays form for logging in.
 const LoginWindow = (props) => {
     return (
         <form id="loginForm"
@@ -19,6 +20,7 @@ const LoginWindow = (props) => {
     );
 };
 
+// Window that displays form for signing up.
 const SignupWindow = (props) => {
     return (
         <form id="signupForm"
@@ -40,6 +42,7 @@ const SignupWindow = (props) => {
     );
 };
 
+// Window that displays form for changing password.
 const ChangePasswordWindow = (props) => {
     return (
         <form id="changePasswordForm"
@@ -63,6 +66,7 @@ const ChangePasswordWindow = (props) => {
     );  
 }
 
+// Log into account based on data from loginForm.
 const handleLogin = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -76,10 +80,11 @@ const handleLogin = (e) => {
         return false;
     }
 
-    helper.sendPost(e.target.action, {username, pass, _csrf});
+    helper.sendRequest('POST', e.target.action, {username, pass, _csrf});
     return false;
 };
 
+// Create an account based on signupForm.
 const handleSignup = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -99,10 +104,11 @@ const handleSignup = (e) => {
         return false;
     }
 
-    helper.sendPost(e.target.action, {username, pass, pass2, _csrf});
+    helper.sendRequest('POST', e.target.action, {username, pass, pass2, _csrf});
     return false;
 };
 
+// Change password based on info from changePasswordForm.
 const handlePasswordChange = (e) => {
     e.preventDefault();
     helper.hideError();
@@ -123,14 +129,17 @@ const handlePasswordChange = (e) => {
         return false;
     }
 
-    helper.sendPost(e.target.action, {username, oldPass, newPass, newPass2, _csrf});
+    helper.sendRequest('POST', e.target.action, {username, oldPass, newPass, newPass2, _csrf});
     return false;
 }
 
+// Initialize all the components needed for the login page.
 const init = async () => {
+    // Get security data up front.
     const response = await fetch('/getToken');
     const data = await response.json();
 
+    // Find necessary elements and add click handlers.
     const loginButton = document.getElementById('loginButton');
     const signupButton = document.getElementById('signupButton');
     const changePasswordButton = document.getElementById('changePasswordButton');
@@ -156,6 +165,7 @@ const init = async () => {
         return false;
     });
 
+    // Render the LoginWindow to start.
     ReactDOM.render(<LoginWindow csrf={data.csrfToken} />,
     document.getElementById('content'));
 };

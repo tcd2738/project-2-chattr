@@ -3,6 +3,7 @@ const JarModel = require('../models/Jar');
 
 const { Jar, Quote } = models;
 
+// Get the jars associated with the current session.
 const getJars = (req, res) => JarModel.findByOwner(req.session.account._id, (err, docs) => {
   if (err) {
     console.log(err);
@@ -11,19 +12,23 @@ const getJars = (req, res) => JarModel.findByOwner(req.session.account._id, (err
   return res.json({ Jars: docs });
 });
 
+// Make a new jar.
 const makeJar = async (req, res) => {
     const jarName = `${req.body.jarName}`;
+    // Owner is listed as the current session account holder.
+    const owner = `${req.session.account._id}`;
 
     if (!jarName) {
         return res.status(400).json({ error: 'A jar name is required!' });
     }
 
+    // Add the owner as the first user.
     const users = [];
-    users.push(req.session.account._id);
+    users.push(owner);
 
     const JarData = {
         jarName: jarName,
-        owner: req.session.account._id,
+        owner: owner,
         users: users
     };
 
