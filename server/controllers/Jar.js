@@ -1,7 +1,7 @@
 const models = require('../models');
 const JarModel = require('../models/Jar');
 
-const { Jar, Quote } = models;
+const { Jar } = models;
 
 // Get the jars associated with the current session.
 const getJars = (req, res) => JarModel.findByOwner(req.session.account._id, (err, docs) => {

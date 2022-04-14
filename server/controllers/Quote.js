@@ -33,7 +33,8 @@ const makeQuote = async (req, res) => {
 // Add a quote (with location data) to the MongoDB.
 const makeLocationQuote = async (req, res) => {
   const quoteCopy = `${req.body.quoteCopy}`;
-  const coordinates = [parseFloat(req.body.location.longitude), parseFloat(req.body.location.latitude)];
+  const coordinates = [parseFloat(req.body.location.longitude),
+    parseFloat(req.body.location.latitude)];
   // Associated account is listed as the current session account holder.
   const username = `${req.session.account.username}`;
 
@@ -71,6 +72,7 @@ const getQuotes = async (req, res) => {
     }
     return res.json({ quotes: docs });
   });
+  return false;
 };
 
 // Get quotes within a certain distance (1km) from the database.
@@ -102,6 +104,7 @@ const getLocationQuotes = async (req, res) => {
     }
     return res.json({ quotes: docs });
   });
+  return false;
 };
 
 module.exports = {

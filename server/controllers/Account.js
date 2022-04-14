@@ -77,7 +77,7 @@ const changePassword = async (req, res) => {
     return res.status(400).json({ error: 'All fields are required!' });
   }
 
-  return Account.authenticate(username, oldPass, async (err, account) => {
+  const currentAccount = await Account.authenticate(username, oldPass, async (err, account) => {
     if (err || !account) {
       return res.status(401).json({ error: 'Wrong username or password!' });
     }
@@ -86,16 +86,19 @@ const changePassword = async (req, res) => {
       return res.status(400).json({ error: 'Passwords do not match!' });
     }
 
-    try {
-      const hash = await Account.generateHash(newPass);
-      account.password = hash;
-      await account.save();
-      return res.json({ redirect: '/app' });
-    } catch (err) {
-      console.log(err);
+    return account;
+  });
+
+  try {
+    const hash = await Account.generateHash(newPass);
+    currentAccount.password = hash;
+    await currentAccount.save();
+    return res.json({ redirect: '/app' });
+  } catch (error) {
+    if (!res.headersSent) {
       return res.status(400).json({ error: 'An error occurred.' });
     }
-  });
+  }
 };
 
 // Changes an account's premium status if the provided account info is correct.
@@ -108,24 +111,27 @@ const setPremium = async (req, res) => {
     return res.status(400).json({ error: 'All fields are required!' });
   }
 
-  return Account.authenticate(username, pass, async (err, account) => {
+  const currentAccount = await Account.authenticate(username, pass, async (err, account) => {
     if (err || !account) {
       return res.status(401).json({ error: 'Wrong username or password!' });
     }
 
-    try {
-      account.isPremium = premium;
-      await account.save();
+    return account;
+  });
 
-      // Change is also made to the session object manually to keep things accurate.
-      req.session.account.isPremium = premium;
+  try {
+    currentAccount.isPremium = premium;
+    await currentAccount.save();
 
-      return res.status(200).json({ redirect: '/app' });
-    } catch (err) {
-      console.log(err);
+    // Change is also made to the session object manually to keep things accurate.
+    req.session.account.isPremium = premium;
+
+    return res.status(200).json({ redirect: '/app' });
+  } catch (error) {
+    if (!res.headersSent) {
       return res.status(400).json({ error: 'An error occurred.' });
     }
-  });
+  }
 };
 
 module.exports = {

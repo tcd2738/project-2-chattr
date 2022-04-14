@@ -30,7 +30,7 @@ JarSchema.statics.toAPI = (doc) => ({
   jarName: doc.jarName,
   quotes: doc.quotes,
   owner: doc.owner,
-  users: users.owner,
+  users: doc.users,
 });
 
 // Locate jars related to a specific user.
