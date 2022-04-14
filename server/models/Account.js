@@ -21,12 +21,12 @@ const AccountSchema = new mongoose.Schema({
   isPremium: {
     type: Boolean,
     default: false,
-    required: true
+    required: true,
   },
   createdDate: {
     type: Date,
     default: Date.now,
-  }
+  },
 });
 
 // Converts a doc to something we can store in redis later on.

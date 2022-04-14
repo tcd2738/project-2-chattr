@@ -31,23 +31,38 @@ const init = async () => {
     });
 
     // Check for location and render starting components if successful.
-    const lResponse = helper.getLocation();
-    if (lResponse !== undefined) {
-        const qResponse = await fetch('/getLocationQuotes?longitude=' + lResponse.longitude + '&latitude=' + lResponse.latitude, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        const qDocs = await qResponse.json();
+    // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
+        // however I spent multiple hours trying to get the navigator object to work
+        // correcty with either async/await or promises to no avail. This is the
+        // workaround that works best.
+    let location;
+    await navigator.geolocation.getCurrentPosition((position) => {
+        const lResult = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+        };
+        location = lResult;
+    });
     
-        ReactDOM.render(
-            <LocationJarContainer quotes={qDocs.quotes} location={lResponse} csrf={_csrf} />, 
-            document.getElementById('content')
-        );
-    } else {
-        helper.handleError("Unable to access your location!");
-    }
+    setTimeout(async () => {
+        if (location !== undefined) {
+            const qResponse = await fetch('/getLocationQuotes?longitude=' + location.longitude + '&latitude=' + location.latitude, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const qDocs = await qResponse.json();
+        
+            ReactDOM.render(
+                <LocationJarContainer quotes={qDocs.quotes} location={location} csrf={_csrf} />, 
+                document.getElementById('content')
+            );
+        } else {
+            helper.handleError("Unable to access your location!");
+            return false;
+        }       
+    }, 2000);
 
     ReactDOM.render(
         <LocationQuoteWindow csrf={_csrf} />,

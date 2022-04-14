@@ -27,27 +27,41 @@ const LocationJarContainer = (props) => {
     useEffect(async () => {
         setTimeout(async () => {
             // Check for location and run question search if successful.
-            const lResponse = await helper.getLocation();
-            if (lResponse !== undefined) {
-                const qResponse = await fetch('/getLocationQuotes?longitude=' + lResponse.longitude + '&latitude=' + lResponse.latitude, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                const qDocs = await qResponse.json();
-                const quotes = qDocs.quotes;
-                fillJar(quotes);
-                findLocation(lResponse); 
-    
-                console.log('just checked quotes and location');
-            } else {
-                helper.handleError("Unable to access your location!");
-            }
-        }, 30000);
+            // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
+                // however I spent multiple hours trying to get the navigator object to work
+                // correcty with either async/await or promises to no avail. This is the
+                // workaround that works best.
+            let lResponse;
+            await navigator.geolocation.getCurrentPosition((position) => {
+                const lResult = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+                lResponse = lResult;
+            });
+            
+            setTimeout(async () => {
+                if (lResponse !== undefined) {
+                    const qResponse = await fetch('/getLocationQuotes?longitude=' + lResponse.longitude + '&latitude=' + lResponse.latitude, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const qDocs = await qResponse.json();
+                    const quotes = qDocs.quotes;
+                    fillJar(quotes);
+                    findLocation(lResponse); 
+        
+                    console.log('just checked quotes and location');
+                } else {
+                    helper.handleError("Unable to access your location!");
+                }       
+            }, 5000);        
+        }, 10000);
     });
 
-    if (quotes.length === 0) {
+    if (quotes.length === 0 || !quotes) {
         return (
             <div>
                 <h3>No quotes here!</h3>

@@ -1,4 +1,5 @@
 const models = require('../models');
+
 const { Account } = models;
 
 // Gets the security token from the server.
@@ -84,7 +85,7 @@ const changePassword = async (req, res) => {
     if (newPass !== newPass2) {
       return res.status(400).json({ error: 'Passwords do not match!' });
     }
-  
+
     try {
       const hash = await Account.generateHash(newPass);
       account.password = hash;
@@ -101,7 +102,7 @@ const changePassword = async (req, res) => {
 const setPremium = async (req, res) => {
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
-  const premium = req.body.premium;
+  const { premium } = req.body;
 
   if (!username || !pass || premium === null) {
     return res.status(400).json({ error: 'All fields are required!' });
@@ -111,21 +112,21 @@ const setPremium = async (req, res) => {
     if (err || !account) {
       return res.status(401).json({ error: 'Wrong username or password!' });
     }
-  
+
     try {
       account.isPremium = premium;
       await account.save();
 
       // Change is also made to the session object manually to keep things accurate.
       req.session.account.isPremium = premium;
-      
+
       return res.status(200).json({ redirect: '/app' });
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred.' });
     }
   });
-}
+};
 
 module.exports = {
   getToken,
@@ -135,5 +136,5 @@ module.exports = {
   logout,
   signup,
   changePassword,
-  setPremium
+  setPremium,
 };

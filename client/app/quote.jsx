@@ -32,14 +32,28 @@ const handleLocationQuote = async (e) => {
     }
 
     // Check for location and send quote if successful.
-    const location = await helper.getLocation();
-    if (location !== undefined) {
-        helper.sendPost(e.target.action, {quoteCopy, location, _csrf});
-        return false;
-    } else {
-        helper.handleError("Unable to access your location!");
-        return false;
-    }
+    // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
+        // however I spent multiple hours trying to get the navigator object to work
+        // correcty with either async/await or promises to no avail. This is the
+        // workaround that works best.
+    let location;
+    await navigator.geolocation.getCurrentPosition((position) => {
+        const lResult = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+        };
+        location = lResult;
+    });
+    
+    setTimeout(() => {
+        if (location !== undefined) {
+            helper.sendRequest('POST', '/addLocationQuote', {quoteCopy, location, _csrf});
+            return false;
+        } else {
+            helper.handleError("Unable to access your location!");
+            return false;
+        }       
+    }, 5000);
 };
 
 module.exports = { LocationQuoteWindow };

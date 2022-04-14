@@ -21,14 +21,12 @@ const router = (app) => {
   app.post('/addLocationQuote', mid.requiresLogin, controllers.Quote.makeLocationQuote);
 
   app.get('/getQuotes', mid.requiresLogin, controllers.Quote.getQuotes);
-  app.put('/getLocationQuotes', mid.requiresLogin, controllers.Quote.getLocationQuotes);
+  app.get('/getLocationQuotes', mid.requiresLogin, controllers.Quote.getLocationQuotes);
 
   app.post('/makeJar', mid.requiresLogin, controllers.Jar.makeJar);
   app.get('/getJars', mid.requiresLogin, controllers.Jar.getJars);
 
-  app.get('*', (req, res) => {
-    return res.status(404).render('notFound');
-  })
+  app.get('*', (req, res) => res.status(404).render('notFound'));
 };
 
 module.exports = router;
