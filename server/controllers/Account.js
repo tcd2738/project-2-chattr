@@ -98,6 +98,7 @@ const changePassword = async (req, res) => {
     if (!res.headersSent) {
       return res.status(400).json({ error: 'An error occurred.' });
     }
+    return false;
   }
 };
 
@@ -131,6 +132,7 @@ const setPremium = async (req, res) => {
     if (!res.headersSent) {
       return res.status(400).json({ error: 'An error occurred.' });
     }
+    return false;
   }
 };
 
