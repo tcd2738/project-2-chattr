@@ -17,13 +17,8 @@ const router = (app) => {
   app.put('/setPremium', mid.requiresLogin, controllers.Account.setPremium);
 
   app.post('/addQuote', mid.requiresLogin, controllers.Quote.makeQuote);
-  app.post('/addLocationQuote', mid.requiresLogin, controllers.Quote.makeLocationQuote);
 
   app.get('/getQuotes', mid.requiresLogin, controllers.Quote.getQuotes);
-  app.get('/getLocationQuotes', mid.requiresLogin, controllers.Quote.getLocationQuotes);
-
-  app.post('/makeJar', mid.requiresLogin, controllers.Jar.makeJar);
-  app.get('/getJars', mid.requiresLogin, controllers.Jar.getJars);
 
   app.get('*', (req, res) => res.status(404).render('notFound'));
 };

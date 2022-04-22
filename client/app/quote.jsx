@@ -1,12 +1,13 @@
+const {useState, useEffect} = React;
 const helper = require('../helper.js');
 
 // Window that displays form for adding public (location-based) quotes.
-const LocationQuoteWindow = (props) => {
+const QuoteMakerWindow = (props) => {
     return (
     <form id="lqForm"
-        onSubmit={handleLocationQuote}
+        onSubmit={handleQuoteMaker}
         name="lqForm"
-        action="/addLocationQuote"
+        action="/addQuote"
         method="POST"
         className="lqForm"
     >
@@ -19,7 +20,7 @@ const LocationQuoteWindow = (props) => {
 )};
 
 // Add quote to MongoDB based off of location quote form.
-const handleLocationQuote = async (e) => {
+const handleQuoteMaker = async (e) => {
     e.preventDefault();
     helper.hideError();
 
@@ -47,7 +48,7 @@ const handleLocationQuote = async (e) => {
     
     setTimeout(() => {
         if (location !== undefined) {
-            helper.sendRequest('POST', '/addLocationQuote', {quoteCopy, location, _csrf});
+            helper.sendRequest('POST', '/addQuote', {quoteCopy, location, _csrf});
             return false;
         } else {
             helper.handleError("Unable to access your location!");
@@ -56,5 +57,71 @@ const handleLocationQuote = async (e) => {
     }, 5000);
 };
 
-module.exports = { LocationQuoteWindow };
+// Container that displays quotes from 1km radius.
+const QuoteContainer = (props) => {
+    const [quotes, fillJar] = useState(props.quotes);
+    const [location, findLocation] = useState(props.location);
+
+    useEffect(async () => {
+        setTimeout(async () => {
+            // Check for location and run question search if successful.
+            // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
+                // however I spent multiple hours trying to get the navigator object to work
+                // correcty with either async/await or promises to no avail. This is the
+                // workaround that works best.
+            let lResponse;
+            await navigator.geolocation.getCurrentPosition((position) => {
+                const lResult = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                };
+                lResponse = lResult;
+            });
+            
+            setTimeout(async () => {
+                if (lResponse !== undefined) {
+                    helper.hideError();
+                    const qResponse = await fetch('/getQuotes?longitude=' + lResponse.longitude + '&latitude=' + lResponse.latitude, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const qDocs = await qResponse.json();
+                    const quotes = qDocs.quotes;
+                    fillJar(quotes);
+                    findLocation(lResponse); 
+                } else {
+                    helper.handleError("Unable to access your location!");
+                }       
+            }, 5000);        
+        }, 5000);
+    });
+
+    if (quotes.length === 0 || !quotes) {
+        return (
+            <div>
+                <h3>No quotes here!</h3>
+            </div>
+        );
+    }
+    
+    // Map and display quotes if quotes are found.
+    const quoteList = quotes.map((quote) => {
+        return (
+            <div key={quote._id}>
+                <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
+            </div>
+        );
+    });
+
+    return (
+        <div>
+            <h1>Quotes in Your Area</h1>
+            {quoteList}
+        </div>
+    )
+};
+
+module.exports = { QuoteMakerWindow, QuoteContainer };
 

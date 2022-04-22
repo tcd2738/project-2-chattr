@@ -14,7 +14,10 @@ const QuoteSchema = new mongoose.Schema({
   },
   location: {
     type: { type: String },
-    coordinates: [],
+    coordinates: {
+      type: [],
+      required: true
+    }
   },
   createdDate: {
     type: Date,

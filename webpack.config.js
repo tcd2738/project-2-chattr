@@ -5,7 +5,6 @@ module.exports = {
         app: './client/app.jsx',
         premium: './client/app/premium.jsx',
         quote: './client/app/quote.jsx',
-        jar: './client/app/jar.jsx',
         login: './client/login.jsx'
     },
     module: {
@@ -19,7 +18,7 @@ module.exports = {
             }
         ]
     },
-    mode: 'production',
+    mode: 'development',
     watchOptions: {
         aggregateTimeout: 200,
     },
