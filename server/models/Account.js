@@ -46,7 +46,7 @@ AccountSchema.statics.authenticate = async (username, password, callback) => {
     if (!doc) {
       return callback();
     }
-
+ 
     const match = await bcrypt.compare(password, doc.password);
     if (match) {
       return callback(null, doc);

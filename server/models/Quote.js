@@ -43,10 +43,10 @@ QuoteSchema.index({ location: '2dsphere' });
 QuoteSchema.statics.findByID = (quoteId, callback) => {
   const search = {
     // Convert the string ownerId to an object id
-    _id: mongoose.Types.ObjectId(quoteId),
+    _id: quoteId
   };
 
-  return QuoteModel.find(search).select('quoteCopy owner location votes createdDate _id').lean().exec(callback);
+  return QuoteModel.findOne(search).exec(callback);
 };
 
 QuoteModel = mongoose.model('Quote', QuoteSchema);

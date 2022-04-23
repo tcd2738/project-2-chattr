@@ -77,20 +77,20 @@ const addVote = async (req, res) => {
   }
 
   await QuoteModel.findByID(quoteID, async (err, quote) => {
+
     if (err) {
-      console.log(err);
       return res.status(400).json({ error: 'An error occured!' });
     }
 
     try {
-      if (voteValue) {
+      if (voteValue === "true") {
         quote.votes++;
       } else {
         quote.votes--;
       }
       await quote.save();
   
-      return res.status(200).json({ redirect: '/app' });
+      return res.status(200);
     } catch (error) {
       return res.status(400).json({ error: 'An error occurred.' });
     }
