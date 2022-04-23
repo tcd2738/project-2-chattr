@@ -49,6 +49,10 @@ QuoteSchema.statics.findByID = (quoteId, callback) => {
   return QuoteModel.findOne(search).exec(callback);
 };
 
+QuoteSchema.statics.findByOwner = (owner, callback) => {
+  return QuoteModel.find({owner}).exec(callback);
+}
+
 QuoteModel = mongoose.model('Quote', QuoteSchema);
 
 module.exports = QuoteModel;

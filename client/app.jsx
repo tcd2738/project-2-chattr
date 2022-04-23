@@ -1,6 +1,7 @@
 const { QuoteMakerWindow, QuoteContainer } = require('./app/quote.jsx');
 const { PremiumWindow } = require('./app/premium.jsx');
 const helper = require('./helper.js');
+const session = require('express-session');
 
 // Initializes all necessary components for main app interface.
 const init = async () => {
@@ -11,11 +12,20 @@ const init = async () => {
 
     // Find necessary elements and add click handlers.
     const premiumButton = document.getElementById('premiumButton');
+    const ownerQuoteButton = document.getElementById('ownerQuoteButton');
 
     premiumButton.addEventListener('click', (e) => {
         e.preventDefault();
         ReactDOM.render(<PremiumWindow csrf={_csrf} />,
         document.getElementById('content'));
+        ReactDOM.render('', document.getElementById('content2'));
+        return false;
+    });
+
+    ownerQuoteButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        // ReactDOM.render(<UserQuoteContainer csrf={_csrf} user={session.account.username} />,
+        // document.getElementById('content'));
         ReactDOM.render('', document.getElementById('content2'));
         return false;
     });

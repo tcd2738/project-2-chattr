@@ -20,6 +20,7 @@ const router = (app) => {
   app.put('/addVote', mid.requiresLogin, controllers.Quote.addVote);
 
   app.get('/getQuotes', mid.requiresLogin, controllers.Quote.getQuotes);
+  app.get('/getOwnerQuotes', mid.requiresLogin, controllers.Quote.getOwnerQuotes);
 
   app.get('*', (req, res) => res.status(404).render('notFound'));
 };

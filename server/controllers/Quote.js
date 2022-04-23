@@ -68,6 +68,22 @@ const getQuotes = async (req, res) => {
   return false;
 };
 
+const getOwnerQuotes = async (req, res) => {
+  const owner = req.query.owner;
+
+  if (!owner) {
+    return res.status(400).json({ error: 'All attributes are required!' });
+  }
+
+  await QuoteModel.findByOwner(owner, async (err, quotes) => {
+    if (err) {
+      return res.status(400).json({ error: 'An error occured!' });
+    }
+
+    return res.json({ quotes: docs });
+  });
+}
+
 const addVote = async (req, res) => {
   const quoteID = `${req.body.quoteID}`;
   const voteValue = `${req.body.voteValue}`;
@@ -97,8 +113,11 @@ const addVote = async (req, res) => {
   });
 };
 
+
+
 module.exports = {
   makeQuote,
   getQuotes,
+  getOwnerQuotes,
   addVote
 };
