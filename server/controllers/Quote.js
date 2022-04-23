@@ -28,7 +28,7 @@ const makeQuote = async (req, res) => {
     const newQuote = new Quote(quoteData);
     await newQuote.save();
     return res.status(201).json(
-      { quoteCopy: newQuote.quoteCopy, location: newQuote.location, owner: newQuote.owner },
+      { quoteCopy: newQuote.quoteCopy, location: newQuote.location, owner: newQuote.owner, votes: newQuote.votes },
     );
   } catch (err) {
     console.log(err);
@@ -49,7 +49,7 @@ const getQuotes = async (req, res) => {
   const search = {
     location: {
       $near: {
-        $maxDistance: 100,
+        $maxDistance: 1000,
         $geometry: {
           type: 'Point',
           coordinates: [longitude, latitude],
@@ -58,7 +58,7 @@ const getQuotes = async (req, res) => {
     },
   };
 
-  await QuoteModel.find(search).select('quoteCopy owner createdDate _id').lean().exec((err, docs) => {
+  await QuoteModel.find(search).select('quoteCopy owner location votes createdDate _id').lean().exec((err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occured!' });
@@ -68,7 +68,37 @@ const getQuotes = async (req, res) => {
   return false;
 };
 
+const addVote = async (req, res) => {
+  const quoteID = `${req.body.quoteID}`;
+  const voteValue = `${req.body.voteValue}`;
+
+  if (!quoteID || !voteValue) {
+    return res.status(400).json({ error: 'All attributes are required!' });
+  }
+
+  await QuoteModel.findByID(quoteID, async (err, quote) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occured!' });
+    }
+
+    try {
+      if (voteValue) {
+        quote.votes++;
+      } else {
+        quote.votes--;
+      }
+      await quote.save();
+  
+      return res.status(200).json({ redirect: '/app' });
+    } catch (error) {
+      return res.status(400).json({ error: 'An error occurred.' });
+    }
+  });
+};
+
 module.exports = {
   makeQuote,
-  getQuotes
+  getQuotes,
+  addVote
 };

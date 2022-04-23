@@ -19,10 +19,14 @@ const QuoteSchema = new mongoose.Schema({
       required: true
     }
   },
+  votes: {
+    type: Number,
+    default: 0
+  },
   createdDate: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
 // Converts a doc to something we can store in redis later on.
@@ -30,10 +34,20 @@ QuoteSchema.statics.toAPI = (doc) => ({
   quoteCopy: doc.quoteCopy,
   owner: doc.owner,
   location: doc.location,
+  votes: doc.votes,
   _id: doc._id,
 });
 
 QuoteSchema.index({ location: '2dsphere' });
+
+QuoteSchema.statics.findByID = (quoteId, callback) => {
+  const search = {
+    // Convert the string ownerId to an object id
+    _id: mongoose.Types.ObjectId(quoteId),
+  };
+
+  return QuoteModel.find(search).select('quoteCopy owner location votes createdDate _id').lean().exec(callback);
+};
 
 QuoteModel = mongoose.model('Quote', QuoteSchema);
 

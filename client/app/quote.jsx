@@ -108,9 +108,15 @@ const QuoteContainer = (props) => {
     
     // Map and display quotes if quotes are found.
     const quoteList = quotes.map((quote) => {
+        console.log(quote);
         return (
             <div key={quote._id}>
                 <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
+                <div>
+                    <h3>Total Votes: {quote.votes}</h3>
+                    <button onClick={() => handleVote(true, quote, _csrf)}>Upvote</button>
+                    <button onClick={() => handleVote(false, quote, _csrf)}>Downvote</button>
+                </div>
             </div>
         );
     });
@@ -121,6 +127,12 @@ const QuoteContainer = (props) => {
             {quoteList}
         </div>
     )
+};
+
+const handleVote = async (voteValue, quote, _csrfObject) => {
+    const quoteID = quote._id;
+    const _csrf = _csrfObject.value;
+    helper.sendRequest('PUT','/addVote', {quoteID, voteValue, _csrf});
 };
 
 module.exports = { QuoteMakerWindow, QuoteContainer };
