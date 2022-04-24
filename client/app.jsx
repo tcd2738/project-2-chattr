@@ -1,7 +1,6 @@
 const { QuoteMakerWindow, QuoteContainer } = require('./app/quote.jsx');
 const { PremiumWindow } = require('./app/premium.jsx');
 const helper = require('./helper.js');
-const session = require('express-session');
 
 // Initializes all necessary components for main app interface.
 const init = async () => {
