@@ -1,4 +1,4 @@
-const { QuoteMakerWindow, QuoteContainer } = require('./app/quote.jsx');
+const { QuoteMakerWindow, QuoteContainer, OwnerQuoteContainer } = require('./app/quote.jsx');
 const { PremiumWindow } = require('./app/premium.jsx');
 const helper = require('./helper.js');
 
@@ -10,8 +10,15 @@ const init = async () => {
     const _csrf = data.csrfToken;
 
     // Find necessary elements and add click handlers.
+    const appButton = document.getElementById('mainAppButton');
     const premiumButton = document.getElementById('premiumButton');
     const ownerQuoteButton = document.getElementById('ownerQuoteButton');
+
+    appButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        mainPageLoad(_csrf, e);
+        return false;
+    });
 
     premiumButton.addEventListener('click', (e) => {
         e.preventDefault();
@@ -21,19 +28,34 @@ const init = async () => {
         return false;
     });
 
-    ownerQuoteButton.addEventListener('click', (e) => {
+    ownerQuoteButton.addEventListener('click', async (e) => {
         e.preventDefault();
-        // ReactDOM.render(<UserQuoteContainer csrf={_csrf} user={session.account.username} />,
-        // document.getElementById('content'));
+
+        const qResponse = await fetch('/getOwnerQuotes', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        const qDocs = await qResponse.json();
+        const quotes = qDocs.quotes;
+
+        ReactDOM.render(<OwnerQuoteContainer csrf={_csrf} quotes={quotes} />,
+        document.getElementById('content'));
         ReactDOM.render('', document.getElementById('content2'));
         return false;
     });
 
+    mainPageLoad(_csrf);
+};
+
+// Loads the main page and all necessary requirements.
+const mainPageLoad = async (_csrf) => {
     // Check for location and render starting components if successful.
     // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
-        // however I spent multiple hours trying to get the navigator object to work
-        // correcty with either async/await or promises to no avail. This is the
-        // workaround that works best.
+    // however I spent multiple hours trying to get the navigator object to work
+    // correcty with either async/await or promises to no avail. This is the
+    // workaround that works best.
     let location;
     await navigator.geolocation.getCurrentPosition((position) => {
         const lResult = {
@@ -67,6 +89,6 @@ const init = async () => {
         <QuoteMakerWindow csrf={_csrf} />,
         document.getElementById('content2')
     );
-};
+}
 
 window.onload = init;

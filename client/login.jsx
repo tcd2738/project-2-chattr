@@ -146,8 +146,7 @@ const init = async () => {
 
     loginButton.addEventListener('click', (e) => {
         e.preventDefault();
-        ReactDOM.render(<LoginWindow csrf={data.csrfToken} />,
-        document.getElementById('content'));
+        mainPageLoad();
         return false;
     });
 
@@ -165,9 +164,14 @@ const init = async () => {
         return false;
     });
 
-    // Render the LoginWindow to start.
+    mainPageLoad(_csrf);
+};
+
+// Loads the main login page and all necessary requirements.
+const mainPageLoad = async (_csrf) => {
     ReactDOM.render(<LoginWindow csrf={data.csrfToken} />,
     document.getElementById('content'));
-};
+    return false;
+}
 
 window.onload = init;

@@ -69,7 +69,7 @@ const getQuotes = async (req, res) => {
 };
 
 const getOwnerQuotes = async (req, res) => {
-  const owner = req.query.owner;
+  const owner = `${req.session.account.username}`;
 
   if (!owner) {
     return res.status(400).json({ error: 'All attributes are required!' });
@@ -80,7 +80,7 @@ const getOwnerQuotes = async (req, res) => {
       return res.status(400).json({ error: 'An error occured!' });
     }
 
-    return res.json({ quotes: docs });
+    return res.json({ quotes });
   });
 }
 

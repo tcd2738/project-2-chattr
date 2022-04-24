@@ -129,11 +129,53 @@ const QuoteContainer = (props) => {
     )
 };
 
+// Container that displays quotes from the current users account.
+const OwnerQuoteContainer = (props) => {
+    const [quotes, fillJar] = useState(props.quotes);
+
+    useEffect(async () => {  
+        helper.hideError();
+        const qResponse = await fetch('/getOwnerQuotes', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        const qDocs = await qResponse.json();
+        const quotes = qDocs.quotes;
+        fillJar(quotes);             
+    });
+
+    if (quotes.length === 0 || !quotes) {
+        return (
+            <div>
+                <h3>You currently have no quotes!</h3>
+            </div>
+        );
+    }
+    
+    // Map and display quotes if quotes are found.
+    const quoteList = quotes.map((quote) => {
+        return (
+            <div key={quote._id}>
+                <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
+            </div>
+        );
+    });
+
+    return (
+        <div>
+            <h1>Your Quotes</h1>
+            {quoteList}
+        </div>
+    )
+};
+
 const handleVote = async (voteValue, quote, _csrfObject) => {
     const quoteID = quote._id;
     const _csrf = _csrfObject.value;
     helper.sendRequest('PUT','/addVote', {quoteID, voteValue, _csrf});
 };
 
-module.exports = { QuoteMakerWindow, QuoteContainer };
+module.exports = { QuoteMakerWindow, QuoteContainer, OwnerQuoteContainer };
 
