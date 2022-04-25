@@ -69,7 +69,7 @@ const ChangePasswordWindow = (props) => {
 // Log into account based on data from loginForm.
 const handleLogin = (e) => {
     e.preventDefault();
-    helper.hideError();
+    
 
     const username = e.target.querySelector('#user').value;
     const pass = e.target.querySelector('#pass').value;
@@ -87,7 +87,7 @@ const handleLogin = (e) => {
 // Create an account based on signupForm.
 const handleSignup = (e) => {
     e.preventDefault();
-    helper.hideError();
+    
 
     const username = e.target.querySelector('#user').value;
     const pass = e.target.querySelector('#pass').value;
@@ -111,7 +111,7 @@ const handleSignup = (e) => {
 // Change password based on info from changePasswordForm.
 const handlePasswordChange = (e) => {
     e.preventDefault();
-    helper.hideError();
+    
 
     const username = e.target.querySelector('#user').value;
     const oldPass = e.target.querySelector('#oldPass').value;
@@ -140,13 +140,13 @@ const init = async () => {
     const data = await response.json();
 
     // Find necessary elements and add click handlers.
-    const loginButton = document.getElementById('loginButton');
+    const loginButton = document.getElementById('mainLoginButton');
     const signupButton = document.getElementById('signupButton');
     const changePasswordButton = document.getElementById('changePasswordButton');
 
     loginButton.addEventListener('click', (e) => {
         e.preventDefault();
-        mainPageLoad();
+        mainPageLoad(data.csrfToken);
         return false;
     });
 
@@ -164,12 +164,12 @@ const init = async () => {
         return false;
     });
 
-    mainPageLoad(_csrf);
+    mainPageLoad(data.csrfToken);
 };
 
 // Loads the main login page and all necessary requirements.
-const mainPageLoad = async (_csrf) => {
-    ReactDOM.render(<LoginWindow csrf={data.csrfToken} />,
+const mainPageLoad = (_csrf) => {
+    ReactDOM.render(<LoginWindow csrf={_csrf} />,
     document.getElementById('content'));
     return false;
 }

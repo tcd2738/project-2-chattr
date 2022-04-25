@@ -45,27 +45,13 @@ const getQuotes = async (req, res) => {
     return res.status(400).json({ error: 'Location has not been found!' });
   }
 
-  // Mongoose has built-in tools for location-based objects.
-  const search = {
-    location: {
-      $near: {
-        $maxDistance: 1000,
-        $geometry: {
-          type: 'Point',
-          coordinates: [longitude, latitude],
-        },
-      },
-    },
-  };
-
-  await QuoteModel.find(search).select('quoteCopy owner location votes createdDate _id').lean().exec((err, docs) => {
+  await QuoteModel.findByLocation(longitude, latitude, async (err, quotes) => {
     if (err) {
-      console.log(err);
       return res.status(400).json({ error: 'An error occured!' });
     }
-    return res.json({ quotes: docs });
+
+    return res.json({ quotes });
   });
-  return false;
 };
 
 const getOwnerQuotes = async (req, res) => {
@@ -87,6 +73,8 @@ const getOwnerQuotes = async (req, res) => {
 const addVote = async (req, res) => {
   const quoteID = `${req.body.quoteID}`;
   const voteValue = `${req.body.voteValue}`;
+  // Associated account is listed as the current session account holder.
+  const username = `${req.session.account.username}`;
 
   if (!quoteID || !voteValue) {
     return res.status(400).json({ error: 'All attributes are required!' });
@@ -98,26 +86,59 @@ const addVote = async (req, res) => {
       return res.status(400).json({ error: 'An error occured!' });
     }
 
+    if (quote.voters.includes(username)) {
+      return res.status(400).json({ error: "You've already voted on this quote!"})
+    }
+
     try {
       if (voteValue === "true") {
         quote.votes++;
+        quote.voters.push(username);
       } else {
         quote.votes--;
+        quote.voters.push(username);
       }
       await quote.save();
   
       return res.status(200);
     } catch (error) {
-      return res.status(400).json({ error: 'An error occurred.' });
+      return res.status(400).json({ error: 'An error occurred!' });
     }
   });
 };
 
+const boostQuote = async (req, res) => {
+  const quoteID = `${req.body.quoteID}`;
 
+  if (!quoteID) {
+    return res.status(400).json({ error: 'All attributes are required!' });
+  }
+
+  await QuoteModel.findByID(quoteID, async (err, quote) => {
+
+    if (err) {
+      return res.status(400).json({ error: 'An error occured!' });
+    }
+
+    try {
+      if(quote.boosted === true) {
+        return res.status(400).json({ error: 'This quote is already boosted!' }); 
+      }
+
+      quote.boosted = true;
+      await quote.save();
+  
+      return res.status(200);
+    } catch (error) {
+      return res.status(400).json({ error: 'An error occurred!' });
+    }
+  });
+}
 
 module.exports = {
   makeQuote,
   getQuotes,
   getOwnerQuotes,
-  addVote
+  addVote,
+  boostQuote
 };

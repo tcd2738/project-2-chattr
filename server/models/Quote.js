@@ -23,9 +23,15 @@ const QuoteSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  voters: [String],
   createdDate: {
     type: Date,
+    expires: 86400,
     default: Date.now,
+  },
+  boosted: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -40,6 +46,23 @@ QuoteSchema.statics.toAPI = (doc) => ({
 
 QuoteSchema.index({ location: '2dsphere' });
 
+QuoteSchema.statics.findByLocation = (longitude, latitude, callback) => {
+    // Mongoose has built-in tools for location-based objects.
+    const search = {
+      location: {
+        $near: {
+          $maxDistance: 100,
+          $geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          },
+        },
+      },
+    };
+
+    return QuoteModel.find(search).sort({ bosted: -1, votes: 1 }).exec(callback);
+};
+
 QuoteSchema.statics.findByID = (quoteId, callback) => {
   const search = {
     // Convert the string ownerId to an object id
@@ -50,8 +73,8 @@ QuoteSchema.statics.findByID = (quoteId, callback) => {
 };
 
 QuoteSchema.statics.findByOwner = (owner, callback) => {
-  return QuoteModel.find({owner}).exec(callback);
-}
+  return QuoteModel.find({owner}).sort({createdDate: -1}).exec(callback);
+};
 
 QuoteModel = mongoose.model('Quote', QuoteSchema);
 

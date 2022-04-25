@@ -3,7 +3,6 @@ const path = require('path');
 module.exports = {
     entry: {
         app: './client/app.jsx',
-        premium: './client/app/premium.jsx',
         quote: './client/app/quote.jsx',
         login: './client/login.jsx'
     },

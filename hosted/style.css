@@ -108,7 +108,7 @@ nav:nth-child(1) {
     display: none;
 }
 
-#errorMessage {
+#errorMessage, #locationErrorMessage {
     top: 250px;
     width: 250px;
     height: 650px;
@@ -118,7 +118,7 @@ nav:nth-child(1) {
     overflow: hidden;
 }
 
-#errorMessage h3 {
+#errorMessage h3, #locationErrorMessage h3 {
     width: 200px;
     position: absolute;
     top: 0px;
@@ -131,7 +131,7 @@ nav:nth-child(1) {
     z-index:300;
 }
 
-#errorText {
+#errorText, #locationErrorText {
     font-size: 1.2em;
     font-weight: bold;
     color: red;

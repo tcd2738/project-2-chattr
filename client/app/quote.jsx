@@ -22,7 +22,6 @@ const QuoteMakerWindow = (props) => {
 // Add quote to MongoDB based off of location quote form.
 const handleQuoteMaker = async (e) => {
     e.preventDefault();
-    helper.hideError();
 
     const quoteCopy = e.target.querySelector('#quoteCopy').value;
     const _csrf = e.target.querySelector("#_csrf").value;
@@ -51,7 +50,7 @@ const handleQuoteMaker = async (e) => {
             helper.sendRequest('POST', '/addQuote', {quoteCopy, location, _csrf});
             return false;
         } else {
-            helper.handleError("Unable to access your location!");
+            helper.handleLocationError("Unable to access your location!");
             return false;
         }       
     }, 5000);
@@ -80,7 +79,7 @@ const QuoteContainer = (props) => {
             
             setTimeout(async () => {
                 if (lResponse !== undefined) {
-                    helper.hideError();
+                    
                     const qResponse = await fetch('/getQuotes?longitude=' + lResponse.longitude + '&latitude=' + lResponse.latitude, {
                         method: 'GET',
                         headers: {
@@ -92,7 +91,7 @@ const QuoteContainer = (props) => {
                     fillJar(quotes);
                     findLocation(lResponse); 
                 } else {
-                    helper.handleError("Unable to access your location!");
+                    helper.handleLocationError("Unable to access your location!");
                 }       
             }, 5000);        
         }, 5000);
@@ -131,22 +130,7 @@ const QuoteContainer = (props) => {
 
 // Container that displays quotes from the current users account.
 const OwnerQuoteContainer = (props) => {
-    const [quotes, fillJar] = useState(props.quotes);
-
-    useEffect(async () => {  
-        helper.hideError();
-        const qResponse = await fetch('/getOwnerQuotes', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        const qDocs = await qResponse.json();
-        const quotes = qDocs.quotes;
-        fillJar(quotes);             
-    });
-
-    if (quotes.length === 0 || !quotes) {
+    if (props.quotes.length === 0 || !props.quotes) {
         return (
             <div>
                 <h3>You currently have no quotes!</h3>
@@ -155,10 +139,11 @@ const OwnerQuoteContainer = (props) => {
     }
     
     // Map and display quotes if quotes are found.
-    const quoteList = quotes.map((quote) => {
+    const quoteList = props.quotes.map((quote) => {
         return (
             <div key={quote._id}>
                 <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
+                <button onClick={() => boostQuote(quote, props.csrf)}>Boost quote?</button>
             </div>
         );
     });
@@ -175,6 +160,12 @@ const handleVote = async (voteValue, quote, _csrfObject) => {
     const quoteID = quote._id;
     const _csrf = _csrfObject.value;
     helper.sendRequest('PUT','/addVote', {quoteID, voteValue, _csrf});
+};
+
+const boostQuote = async (quote, _csrfObject) => {
+    const quoteID = quote._id;
+    const _csrf = _csrfObject;
+    helper.sendRequest('PUT', '/boostQuote', {quoteID, _csrf});
 };
 
 module.exports = { QuoteMakerWindow, QuoteContainer, OwnerQuoteContainer };

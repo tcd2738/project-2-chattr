@@ -1,5 +1,4 @@
 const { QuoteMakerWindow, QuoteContainer, OwnerQuoteContainer } = require('./app/quote.jsx');
-const { PremiumWindow } = require('./app/premium.jsx');
 const helper = require('./helper.js');
 
 // Initializes all necessary components for main app interface.
@@ -11,20 +10,11 @@ const init = async () => {
 
     // Find necessary elements and add click handlers.
     const appButton = document.getElementById('mainAppButton');
-    const premiumButton = document.getElementById('premiumButton');
     const ownerQuoteButton = document.getElementById('ownerQuoteButton');
 
     appButton.addEventListener('click', (e) => {
         e.preventDefault();
         mainPageLoad(_csrf, e);
-        return false;
-    });
-
-    premiumButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        ReactDOM.render(<PremiumWindow csrf={_csrf} />,
-        document.getElementById('content'));
-        ReactDOM.render('', document.getElementById('content2'));
         return false;
     });
 
@@ -51,6 +41,8 @@ const init = async () => {
 
 // Loads the main page and all necessary requirements.
 const mainPageLoad = async (_csrf) => {
+    
+    
     // Check for location and render starting components if successful.
     // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
     // however I spent multiple hours trying to get the navigator object to work
@@ -80,7 +72,7 @@ const mainPageLoad = async (_csrf) => {
                 document.getElementById('content')
             );
         } else {
-            helper.handleError("Unable to access your location!");
+            helper.handleLocationError("Unable to access your location!");
             return false;
         }       
     }, 2000);

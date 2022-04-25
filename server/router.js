@@ -14,7 +14,7 @@ const router = (app) => {
 
   app.get('/app', mid.requiresLogin, controllers.Account.appPage);
 
-  app.put('/setPremium', mid.requiresLogin, controllers.Account.setPremium);
+  app.put('/boostQuote', mid.requiresLogin, controllers.Quote.boostQuote);
 
   app.post('/addQuote', mid.requiresLogin, controllers.Quote.makeQuote);
   app.put('/addVote', mid.requiresLogin, controllers.Quote.addVote);

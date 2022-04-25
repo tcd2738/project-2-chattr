@@ -102,40 +102,6 @@ const changePassword = async (req, res) => {
   }
 };
 
-// Changes an account's premium status if the provided account info is correct.
-const setPremium = async (req, res) => {
-  const username = `${req.body.username}`;
-  const pass = `${req.body.pass}`;
-  const { premium } = req.body;
-
-  if (!username || !pass || premium === null) {
-    return res.status(400).json({ error: 'All fields are required!' });
-  }
-
-  const currentAccount = await Account.authenticate(username, pass, async (err, account) => {
-    if (err || !account) {
-      return res.status(401).json({ error: 'Wrong username or password!' });
-    }
-
-    return account;
-  });
-
-  try {
-    currentAccount.isPremium = premium;
-    await currentAccount.save();
-
-    // Change is also made to the session object manually to keep things accurate.
-    req.session.account.isPremium = premium;
-
-    return res.status(200).json({ redirect: '/app' });
-  } catch (error) {
-    if (!res.headersSent) {
-      return res.status(400).json({ error: 'An error occurred.' });
-    }
-    return false;
-  }
-};
-
 module.exports = {
   getToken,
   loginPage,
@@ -143,6 +109,5 @@ module.exports = {
   login,
   logout,
   signup,
-  changePassword,
-  setPremium,
+  changePassword
 };

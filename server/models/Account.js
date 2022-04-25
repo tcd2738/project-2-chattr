@@ -18,11 +18,6 @@ const AccountSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  isPremium: {
-    type: Boolean,
-    default: false,
-    required: true,
-  },
   createdDate: {
     type: Date,
     default: Date.now,

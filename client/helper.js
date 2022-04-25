@@ -2,6 +2,20 @@
 const handleError = (message) => {
   document.getElementById('errorText').textContent = message;
   document.getElementById('errorMessage').classList.remove('hidden');
+
+  setTimeout(() => {
+    document.getElementById('errorMessage').classList.add('hidden');
+  }, 8000);
+};
+
+// Location errors get their own seperate field as they refresh quite frequently.
+const handleLocationError = (message) => {
+  document.getElementById('locationErrorText').textContent = message;
+  document.getElementById('locationErrorMessage').classList.remove('hidden');
+
+  setTimeout(() => {
+    document.getElementById('locationErrorMessage').classList.add('hidden');
+  }, 8000);
 };
   
 // Sends requests with body data to the server. Will handle returns appropriately.
@@ -30,10 +44,6 @@ const sendRequest = async (method, url, data, handler) => {
   }
 };
 
-const hideError = () => {
-    document.getElementById('errorMessage').classList.add('hidden');
-};
-
 // Accesses the browser's navigator object, and pulls location data.
 const getLocation = async () => navigator.geolocation.getCurrentPosition((position) => {
   const lResult = {
@@ -45,7 +55,7 @@ const getLocation = async () => navigator.geolocation.getCurrentPosition((positi
 
 module.exports = {
     handleError,
+    handleLocationError,
     sendRequest,
-    hideError,
     getLocation
 };
