@@ -28,7 +28,12 @@ const makeQuote = async (req, res) => {
     const newQuote = new Quote(quoteData);
     await newQuote.save();
     return res.status(201).json(
-      { quoteCopy: newQuote.quoteCopy, location: newQuote.location, owner: newQuote.owner, votes: newQuote.votes },
+      {
+        quoteCopy: newQuote.quoteCopy,
+        location: newQuote.location,
+        owner: newQuote.owner,
+        votes: newQuote.votes,
+      },
     );
   } catch (err) {
     console.log(err);
@@ -52,6 +57,7 @@ const getQuotes = async (req, res) => {
 
     return res.json({ quotes });
   });
+  return false;
 };
 
 const getOwnerQuotes = async (req, res) => {
@@ -68,7 +74,8 @@ const getOwnerQuotes = async (req, res) => {
 
     return res.json({ quotes });
   });
-}
+  return false;
+};
 
 const addVote = async (req, res) => {
   const quoteID = `${req.body.quoteID}`;
@@ -81,30 +88,32 @@ const addVote = async (req, res) => {
   }
 
   await QuoteModel.findByID(quoteID, async (err, quote) => {
-
     if (err) {
       return res.status(400).json({ error: 'An error occured!' });
     }
 
     if (quote.voters.includes(username)) {
-      return res.status(400).json({ error: "You've already voted on this quote!"})
+      return res.status(400).json({ error: "You've already voted on this quote!" });
     }
 
     try {
-      if (voteValue === "true") {
-        quote.votes++;
-        quote.voters.push(username);
+      const currentQuote = quote;
+
+      if (voteValue === 'true') {
+        currentQuote.votes++;
+        currentQuote.voters.push(username);
       } else {
-        quote.votes--;
-        quote.voters.push(username);
+        currentQuote.votes--;
+        currentQuote.voters.push(username);
       }
-      await quote.save();
-  
+      await currentQuote.save();
+
       return res.status(200);
     } catch (error) {
       return res.status(400).json({ error: 'An error occurred!' });
     }
   });
+  return false;
 };
 
 const boostQuote = async (req, res) => {
@@ -115,30 +124,32 @@ const boostQuote = async (req, res) => {
   }
 
   await QuoteModel.findByID(quoteID, async (err, quote) => {
-
     if (err) {
       return res.status(400).json({ error: 'An error occured!' });
     }
 
     try {
-      if(quote.boosted === true) {
-        return res.status(400).json({ error: 'This quote is already boosted!' }); 
+      const currentQuote = quote;
+
+      if (quote.boosted === true) {
+        return res.status(400).json({ error: 'This quote is already boosted!' });
       }
 
-      quote.boosted = true;
-      await quote.save();
-  
+      currentQuote.boosted = true;
+      await currentQuote.save();
+
       return res.status(200);
     } catch (error) {
       return res.status(400).json({ error: 'An error occurred!' });
     }
   });
-}
+  return false;
+};
 
 module.exports = {
   makeQuote,
   getQuotes,
   getOwnerQuotes,
   addVote,
-  boostQuote
+  boostQuote,
 };

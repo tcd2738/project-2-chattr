@@ -16,12 +16,12 @@ const QuoteSchema = new mongoose.Schema({
     type: { type: String },
     coordinates: {
       type: [],
-      required: true
-    }
+      required: true,
+    },
   },
   votes: {
     type: Number,
-    default: 0
+    default: 0,
   },
   voters: [String],
   createdDate: {
@@ -31,8 +31,8 @@ const QuoteSchema = new mongoose.Schema({
   },
   boosted: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 // Converts a doc to something we can store in redis later on.
@@ -47,34 +47,33 @@ QuoteSchema.statics.toAPI = (doc) => ({
 QuoteSchema.index({ location: '2dsphere' });
 
 QuoteSchema.statics.findByLocation = (longitude, latitude, callback) => {
-    // Mongoose has built-in tools for location-based objects.
-    const search = {
-      location: {
-        $near: {
-          $maxDistance: 100,
-          $geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
-          },
+  // Mongoose has built-in tools for location-based objects.
+  const search = {
+    location: {
+      $near: {
+        $maxDistance: 100,
+        $geometry: {
+          type: 'Point',
+          coordinates: [longitude, latitude],
         },
       },
-    };
+    },
+  };
 
-    return QuoteModel.find(search).sort({ bosted: -1, votes: 1 }).exec(callback);
+  return QuoteModel.find(search).sort({ boosted: -1, votes: -1 }).exec(callback);
 };
 
 QuoteSchema.statics.findByID = (quoteId, callback) => {
   const search = {
     // Convert the string ownerId to an object id
-    _id: quoteId
+    _id: quoteId,
   };
 
   return QuoteModel.findOne(search).exec(callback);
 };
 
-QuoteSchema.statics.findByOwner = (owner, callback) => {
-  return QuoteModel.find({owner}).sort({createdDate: -1}).exec(callback);
-};
+QuoteSchema.statics.findByOwner = (owner, callback) => QuoteModel
+  .find({ owner }).sort({ createdDate: -1 }).exec(callback);
 
 QuoteModel = mongoose.model('Quote', QuoteSchema);
 

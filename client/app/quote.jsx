@@ -31,53 +31,32 @@ const handleQuoteMaker = async (e) => {
         return false;  
     }
 
-    // Check for location and send quote if successful.
-    // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
-        // however I spent multiple hours trying to get the navigator object to work
-        // correcty with either async/await or promises to no avail. This is the
-        // workaround that works best.
-    let location;
     await navigator.geolocation.getCurrentPosition((position) => {
-        const lResult = {
+        const location = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         };
-        location = lResult;
-    });
-    
-    setTimeout(() => {
+
         if (location !== undefined) {
             helper.sendRequest('POST', '/addQuote', {quoteCopy, location, _csrf});
-            return false;
         } else {
             helper.handleLocationError("Unable to access your location!");
-            return false;
-        }       
-    }, 5000);
+        } 
+    });
 };
 
 // Container that displays quotes from 1km radius.
 const QuoteContainer = (props) => {
     const [quotes, fillJar] = useState(props.quotes);
-    const [location, findLocation] = useState(props.location);
 
-    useEffect(async () => {
-        setTimeout(async () => {
-            // Check for location and run question search if successful.
-            // NOTE: I know setTimeout() is a frowned upon way to code asyncronously,
-                // however I spent multiple hours trying to get the navigator object to work
-                // correcty with either async/await or promises to no avail. This is the
-                // workaround that works best.
-            let lResponse;
-            await navigator.geolocation.getCurrentPosition((position) => {
-                const lResult = {
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            await navigator.geolocation.getCurrentPosition(async (position) => {
+                const lResponse = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 };
-                lResponse = lResult;
-            });
-            
-            setTimeout(async () => {
+        
                 if (lResponse !== undefined) {
                     
                     const qResponse = await fetch('/getQuotes?longitude=' + lResponse.longitude + '&latitude=' + lResponse.latitude, {
@@ -88,13 +67,13 @@ const QuoteContainer = (props) => {
                     });
                     const qDocs = await qResponse.json();
                     const quotes = qDocs.quotes;
-                    fillJar(quotes);
-                    findLocation(lResponse); 
+                    fillJar(quotes); 
                 } else {
                     helper.handleLocationError("Unable to access your location!");
-                }       
-            }, 5000);        
-        }, 5000);
+                }   
+            });      
+        }, 10000);
+        return () => clearInterval(interval);
     });
 
     if (quotes.length === 0 || !quotes) {
@@ -107,7 +86,6 @@ const QuoteContainer = (props) => {
     
     // Map and display quotes if quotes are found.
     const quoteList = quotes.map((quote) => {
-        console.log(quote);
         return (
             <div key={quote._id}>
                 <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
@@ -143,7 +121,10 @@ const OwnerQuoteContainer = (props) => {
         return (
             <div key={quote._id}>
                 <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
-                <button onClick={() => boostQuote(quote, props.csrf)}>Boost quote?</button>
+                {quote.boosted
+                    ? <h3>Quote Boosted</h3>
+                    : <button onClick={() => boostQuote(quote, props.csrf)}>Boost quote?</button>
+                }
             </div>
         );
     });
