@@ -65,6 +65,7 @@ const mainPageLoad = async (_csrf) => {
         }   
     }); 
 
+    // Render quote maker window even if location check fails.
     ReactDOM.render(
         <QuoteMakerWindow csrf={_csrf} />,
         document.getElementById('content2')

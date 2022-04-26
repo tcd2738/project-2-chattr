@@ -44,21 +44,8 @@ const sendRequest = async (method, url, data, handler) => {
   }
 };
 
-// Accesses the browser's navigator object, and pulls location data.
-const getLocation = async () => {
-  const lResult = await navigator.geolocation.getCurrentPosition((position) => {
-    const loc = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-    };
-    return loc;
-  });
-  return lResult;
-}
-
 module.exports = {
     handleError,
     handleLocationError,
-    sendRequest,
-    getLocation
+    sendRequest
 };

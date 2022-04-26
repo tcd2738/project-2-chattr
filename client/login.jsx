@@ -70,7 +70,6 @@ const ChangePasswordWindow = (props) => {
 const handleLogin = (e) => {
     e.preventDefault();
     
-
     const username = e.target.querySelector('#user').value;
     const pass = e.target.querySelector('#pass').value;
     const _csrf = e.target.querySelector('#_csrf').value;
@@ -88,7 +87,6 @@ const handleLogin = (e) => {
 const handleSignup = (e) => {
     e.preventDefault();
     
-
     const username = e.target.querySelector('#user').value;
     const pass = e.target.querySelector('#pass').value;
     const pass2 = e.target.querySelector('#pass2').value;
@@ -111,7 +109,6 @@ const handleSignup = (e) => {
 // Change password based on info from changePasswordForm.
 const handlePasswordChange = (e) => {
     e.preventDefault();
-    
 
     const username = e.target.querySelector('#user').value;
     const oldPass = e.target.querySelector('#oldPass').value;

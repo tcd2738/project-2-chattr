@@ -44,6 +44,7 @@ QuoteSchema.statics.toAPI = (doc) => ({
   _id: doc._id,
 });
 
+// Add location type to schema in order to enable location search later on.
 QuoteSchema.index({ location: '2dsphere' });
 
 QuoteSchema.statics.findByLocation = (longitude, latitude, callback) => {
@@ -51,7 +52,7 @@ QuoteSchema.statics.findByLocation = (longitude, latitude, callback) => {
   const search = {
     location: {
       $near: {
-        $maxDistance: 100,
+        $maxDistance: 50,
         $geometry: {
           type: 'Point',
           coordinates: [longitude, latitude],
@@ -60,6 +61,7 @@ QuoteSchema.statics.findByLocation = (longitude, latitude, callback) => {
     },
   };
 
+  // Sort the quotes by whether or not they are boosted and then how many quotes they have.
   return QuoteModel.find(search).sort({ boosted: -1, votes: -1 }).exec(callback);
 };
 
@@ -73,6 +75,7 @@ QuoteSchema.statics.findByID = (quoteId, callback) => {
 };
 
 QuoteSchema.statics.findByOwner = (owner, callback) => QuoteModel
+  // Sort quotes by most recently created.
   .find({ owner }).sort({ createdDate: -1 }).exec(callback);
 
 QuoteModel = mongoose.model('Quote', QuoteSchema);

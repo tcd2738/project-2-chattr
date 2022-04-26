@@ -51,6 +51,7 @@ const signup = async (req, res) => {
     return res.status(400).json({ error: 'Passwords do not match!' });
   }
 
+  // Attempt to add account to the DB.
   try {
     const hash = await Account.generateHash(pass);
     const newAccount = new Account({ username, password: hash });
@@ -89,6 +90,7 @@ const changePassword = async (req, res) => {
     return account;
   });
 
+  // Attempt to change the password and edit the record in the DB.
   try {
     const hash = await Account.generateHash(newPass);
     currentAccount.password = hash;

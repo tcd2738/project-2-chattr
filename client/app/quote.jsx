@@ -50,6 +50,7 @@ const QuoteContainer = (props) => {
     const [quotes, fillJar] = useState(props.quotes);
 
     useEffect(() => {
+        // Check the location and reload the quotes every 10 seconds.
         const interval = setInterval(async () => {
             await navigator.geolocation.getCurrentPosition(async (position) => {
                 const lResponse = {
@@ -90,9 +91,9 @@ const QuoteContainer = (props) => {
             <div key={quote._id}>
                 <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
                 <div>
-                    <h3>Total Votes: {quote.votes}</h3>
-                    <button onClick={() => handleVote(true, quote, _csrf)}>Upvote</button>
-                    <button onClick={() => handleVote(false, quote, _csrf)}>Downvote</button>
+                    <h3>Popularity: {quote.votes}</h3>
+                    <button onClick={() => handleVote(true, quote, _csrf)}>Like</button>
+                    <button onClick={() => handleVote(false, quote, _csrf)}>Dislike</button>
                 </div>
             </div>
         );
@@ -137,12 +138,14 @@ const OwnerQuoteContainer = (props) => {
     )
 };
 
+// Send request to server to add vote.
 const handleVote = async (voteValue, quote, _csrfObject) => {
     const quoteID = quote._id;
     const _csrf = _csrfObject.value;
     helper.sendRequest('PUT','/addVote', {quoteID, voteValue, _csrf});
 };
 
+// Send request to server to boost quote.
 const boostQuote = async (quote, _csrfObject) => {
     const quoteID = quote._id;
     const _csrf = _csrfObject;

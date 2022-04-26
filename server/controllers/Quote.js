@@ -3,11 +3,12 @@ const QuoteModel = require('../models/Quote');
 
 const { Quote } = models;
 
-// Add a quote (with location data) to the MongoDB.
+// Add a quote tto the MongoDB.
 const makeQuote = async (req, res) => {
   const quoteCopy = `${req.body.quoteCopy}`;
   const coordinates = [parseFloat(req.body.location.longitude),
     parseFloat(req.body.location.latitude)];
+
   // Associated account is listed as the current session account holder.
   const username = `${req.session.account.username}`;
 
@@ -27,21 +28,14 @@ const makeQuote = async (req, res) => {
   try {
     const newQuote = new Quote(quoteData);
     await newQuote.save();
-    return res.status(201).json(
-      {
-        quoteCopy: newQuote.quoteCopy,
-        location: newQuote.location,
-        owner: newQuote.owner,
-        votes: newQuote.votes,
-      },
-    );
+    return res.status(201).json(newQuote);
   } catch (err) {
     console.log(err);
     return res.status(400).json({ error: 'An error occured.' });
   }
 };
 
-// Get quotes within a certain distance (1km) from the database.
+// Get quotes within a certain distance (50m) from the database.
 const getQuotes = async (req, res) => {
   const latitude = parseFloat(req.query.latitude);
   const longitude = parseFloat(req.query.longitude);
@@ -50,7 +44,7 @@ const getQuotes = async (req, res) => {
     return res.status(400).json({ error: 'Location has not been found!' });
   }
 
-  await QuoteModel.findByLocation(longitude, latitude, async (err, quotes) => {
+  await QuoteModel.findByLocation(longitude, latitude, (err, quotes) => {
     if (err) {
       return res.status(400).json({ error: 'An error occured!' });
     }
@@ -60,6 +54,7 @@ const getQuotes = async (req, res) => {
   return false;
 };
 
+// Get the quotes made by the current account.
 const getOwnerQuotes = async (req, res) => {
   const owner = `${req.session.account.username}`;
 
@@ -77,9 +72,11 @@ const getOwnerQuotes = async (req, res) => {
   return false;
 };
 
+// Add a vote to a specified quote.
 const addVote = async (req, res) => {
   const quoteID = `${req.body.quoteID}`;
   const voteValue = `${req.body.voteValue}`;
+
   // Associated account is listed as the current session account holder.
   const username = `${req.session.account.username}`;
 
@@ -96,6 +93,7 @@ const addVote = async (req, res) => {
       return res.status(400).json({ error: "You've already voted on this quote!" });
     }
 
+    // Try to update the vote tally and voters list in the DB.
     try {
       const currentQuote = quote;
 
@@ -116,6 +114,7 @@ const addVote = async (req, res) => {
   return false;
 };
 
+// Mark a quote as boosted.
 const boostQuote = async (req, res) => {
   const quoteID = `${req.body.quoteID}`;
 
