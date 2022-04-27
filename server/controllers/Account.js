@@ -5,6 +5,9 @@ const { Account } = models;
 // Gets the security token from the server.
 const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });
 
+// Gets the current user's username.
+const getUsername = (req, res) => res.json({ username: req.session.account.username });
+
 // Displays the 'login' page if the security token is foun.d
 const loginPage = (req, res) => res.render('login', { csrfToken: req.csrfToken() });
 
@@ -106,6 +109,7 @@ const changePassword = async (req, res) => {
 
 module.exports = {
   getToken,
+  getUsername,
   loginPage,
   appPage,
   login,

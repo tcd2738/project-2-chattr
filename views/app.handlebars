@@ -4,30 +4,42 @@
   <title>Chattr</title>
   <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-  <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+  <link rel="shortcut icon" href="/assets/img/chatter-teeth.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
 </head>
 <body>
-  <nav><a id="mainAppButton" href="/app"><img id="logo" src="/assets/img/face.png" alt="face logo"/></a>
-      <div class="navlink"><a id="ownerQuoteButton" href="/getOwnerQuotes">See Your Quotes</a></div>
+
+  <nav><img id="logo" src="/assets/img/chatter-teeth.png" alt="face logo"/>
+    <div class="mainNavLink"><a id="mainAppButton" href="/app">Chattr</a></div>
     <div class="navlink"><a id="logoutButton" href="/logout">Log out</a></div>
+    <div class="navlink"><a id="ownerQuoteButton" href="/getOwnerQuotes">My Quotes</a></div>
   </nav>
 
   <section id="content"></section>
   <section id="content2"></section>
 
-  <div id="errorMessage" class='hidden'>
-    <img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorText"></span></h3>
-  </div>
-
-  <div id="locationErrorMessage" class='hidden'>
-    <img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="locationErrorText"></span></h3>
-  </div>
   <script src="/assets/appBundle.js"></script>
   <script src="/assets/premiumBundle.js"></script>
   <script src="/assets/quoteBundle.js"></script>
   <script src="/assets/jarBundle.js"></script>
 </body>
+<footer>
+  <div id="errorMessage" class='hidden'>
+    <h3><span id="errorText"></span></h3>
+  </div>
+
+  <div id="locationErrorMessage" class='hidden'>
+    <h3><span id="locationErrorText"></span></h3>
+  </div>
+  
+  <section id="about">
+    <h2>What is Chattr?</h2>
+    <p>Chattr is a real-time application that allows you to share and read overheard thoughts from your local area. 
+      Be careful though! They only stick around for 24 hours!</p>
+    <h3>Created by Tommy Delp for IGME-430 @ RIT</h3>
+  </section>
+</footer>
 </html>

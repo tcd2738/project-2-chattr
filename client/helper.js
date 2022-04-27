@@ -5,7 +5,7 @@ const handleError = (message) => {
 
   setTimeout(() => {
     document.getElementById('errorMessage').classList.add('hidden');
-  }, 8000);
+  }, 12000);
 };
 
 // Location errors get their own seperate field as they refresh quite frequently.
@@ -15,7 +15,7 @@ const handleLocationError = (message) => {
 
   setTimeout(() => {
     document.getElementById('locationErrorMessage').classList.add('hidden');
-  }, 8000);
+  }, 12000);
 };
   
 // Sends requests with body data to the server. Will handle returns appropriately.

@@ -62,7 +62,7 @@ QuoteSchema.statics.findByLocation = (longitude, latitude, callback) => {
   };
 
   // Sort the quotes by whether or not they are boosted and then how many quotes they have.
-  return QuoteModel.find(search).sort({ boosted: -1, votes: -1 }).exec(callback);
+  return QuoteModel.find(search).sort({ boosted: -1, votes: -1, createdDate: -1 }).exec(callback);
 };
 
 QuoteSchema.statics.findByID = (quoteId, callback) => {

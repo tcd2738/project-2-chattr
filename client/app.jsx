@@ -4,9 +4,13 @@ const helper = require('./helper.js');
 // Initializes all necessary components for main app interface.
 const init = async () => {
     // Get security data up front.
-    const response = await fetch('/getToken');
-    const data = await response.json();
-    const _csrf = data.csrfToken;
+    const CSRFresponse = await fetch('/getToken');
+    const CSRFdata = await CSRFresponse.json();
+    const _csrf = CSRFdata.csrfToken;
+
+    const usernameResponse = await fetch('/getUsername');
+    const usernameData = await usernameResponse.json();
+    const username = usernameData.username;
 
     // Find necessary elements and add click handlers.
     const appButton = document.getElementById('mainAppButton');
@@ -30,7 +34,7 @@ const init = async () => {
         const qDocs = await qResponse.json();
         const quotes = qDocs.quotes;
 
-        ReactDOM.render(<OwnerQuoteContainer csrf={_csrf} quotes={quotes} />,
+        ReactDOM.render(<OwnerQuoteContainer username={username} csrf={_csrf} quotes={quotes} />,
         document.getElementById('content'));
         ReactDOM.render('', document.getElementById('content2'));
         return false;
@@ -63,13 +67,19 @@ const mainPageLoad = async (_csrf) => {
         } else {
             helper.handleLocationError("Unable to access your location!");
         }   
-    }); 
 
-    // Render quote maker window even if location check fails.
-    ReactDOM.render(
-        <QuoteMakerWindow csrf={_csrf} />,
-        document.getElementById('content2')
-    );
+        // Render quote maker window too.
+        ReactDOM.render(
+            <QuoteMakerWindow csrf={_csrf} />,
+            document.getElementById('content2')
+        );
+    }, (err) => {
+        // Render quote maker window even if location check fails.
+        ReactDOM.render(
+            <QuoteMakerWindow csrf={_csrf} />,
+            document.getElementById('content2')
+        );
+    }); 
 }
 
 window.onload = init;

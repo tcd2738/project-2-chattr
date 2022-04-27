@@ -9,11 +9,10 @@ const QuoteMakerWindow = (props) => {
         name="lqForm"
         action="/addQuote"
         method="POST"
-        className="lqForm"
+        className="mainForm"
     >
-        <h1>Add a Location-based Quote:</h1>
-        <label htmlFor="quoteCopy">Quote: </label>
-        <input id="quoteCopy" type="text" name="quoteCopy" placeholder="What'd you hear?" />
+        <label htmlFor="quoteCopy">What did <b>you</b> hear?</label>
+        <input id="quoteCopy" type="text" name="quoteCopy" placeholder="enter quote" />
         <input id="_csrf" type="hidden" name="_csrf" value={props.csrf} />
         <input className="submitQuote" type="submit" value="Submit Quote" />
     </form>
@@ -80,7 +79,7 @@ const QuoteContainer = (props) => {
     if (quotes.length === 0 || !quotes) {
         return (
             <div>
-                <h3>No quotes here!</h3>
+                <h3 className="pageHeader">No thoughts. Head empty.</h3>
             </div>
         );
     }
@@ -88,9 +87,10 @@ const QuoteContainer = (props) => {
     // Map and display quotes if quotes are found.
     const quoteList = quotes.map((quote) => {
         return (
-            <div key={quote._id}>
-                <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
-                <div>
+            <div className="quoteObject" key={quote._id}>
+                <h2>{quote.boosted && <i>Ad: </i>}{quote.quoteCopy}</h2>
+                <h3>(overheard by {quote.owner})</h3>
+                <div className="popularityObject">
                     <h3>Popularity: {quote.votes}</h3>
                     <button onClick={() => handleVote(true, quote, _csrf)}>Like</button>
                     <button onClick={() => handleVote(false, quote, _csrf)}>Dislike</button>
@@ -101,7 +101,7 @@ const QuoteContainer = (props) => {
 
     return (
         <div>
-            <h1>Quotes in Your Area</h1>
+            <h1 className="pageHeader">Here's what people are hearing:</h1>
             {quoteList}
         </div>
     )
@@ -112,7 +112,7 @@ const OwnerQuoteContainer = (props) => {
     if (props.quotes.length === 0 || !props.quotes) {
         return (
             <div>
-                <h3>You currently have no quotes!</h3>
+                <h3 className="pageHeader">No thoughts. Head empty.</h3>
             </div>
         );
     }
@@ -120,11 +120,11 @@ const OwnerQuoteContainer = (props) => {
     // Map and display quotes if quotes are found.
     const quoteList = props.quotes.map((quote) => {
         return (
-            <div key={quote._id}>
-                <h2>{quote.quoteCopy} - overheard by <i>{quote.owner}</i></h2>
+            <div className="quoteObject" key={quote._id}>
+                <h2>{quote.quoteCopy}</h2>
                 {quote.boosted
-                    ? <h3>Quote Boosted</h3>
-                    : <button onClick={() => boostQuote(quote, props.csrf)}>Boost quote?</button>
+                    ? <h3>(quote aleady boosted)</h3>
+                    : <button onClick={() => boostQuote(props.username, quote, props.csrf)}>Boost quote?</button>
                 }
             </div>
         );
@@ -132,7 +132,7 @@ const OwnerQuoteContainer = (props) => {
 
     return (
         <div>
-            <h1>Your Quotes</h1>
+            <h1 className="pageHeader">{props.username}'s Quotes</h1>
             {quoteList}
         </div>
     )
@@ -146,10 +146,24 @@ const handleVote = async (voteValue, quote, _csrfObject) => {
 };
 
 // Send request to server to boost quote.
-const boostQuote = async (quote, _csrfObject) => {
+const boostQuote = async (username, quote, _csrfObject) => {
     const quoteID = quote._id;
     const _csrf = _csrfObject;
     helper.sendRequest('PUT', '/boostQuote', {quoteID, _csrf});
+
+    // Re-render the owner quote page with the new info.
+    const qResponse = await fetch('/getOwnerQuotes', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    });
+    const qDocs = await qResponse.json();
+    const quotes = qDocs.quotes;
+
+    ReactDOM.render(<OwnerQuoteContainer username={username} csrf={_csrf} quotes={quotes} />,
+    document.getElementById('content'));
+    ReactDOM.render('', document.getElementById('content2'));
 };
 
 module.exports = { QuoteMakerWindow, QuoteContainer, OwnerQuoteContainer };

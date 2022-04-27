@@ -4,11 +4,12 @@
   <title>Chattr</title>
   <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-  <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+  <link rel="shortcut icon" href="/assets/img/chatter-teeth.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body> 
-  <nav><a href="/login" id="mainLoginButton"><img id="logo" src="/assets/img/face.png" alt="face logo"/></a>
+  <nav><img id="logo" src="/assets/img/chatter-teeth.png" alt="face logo"/>
+    <div class="mainNavLink"><a href="/login" id="mainLoginButton">Chattr</a></div>
     <div class="navlink"><a id="signupButton" href="/signup">Sign up</a></div>
     <div class="navlink"><a id="changePasswordButton" href="/changePassword">Change Password</a></div>
   </nav>
@@ -17,10 +18,22 @@
 
   </section>
 
-  <div id="errorMessage" class='hidden'>
-    <img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorText"></span></h3>
-  </div>
   <script src="/assets/loginBundle.js"></script>
 </body>
+<footer>
+  <div id="errorMessage" class='hidden'>
+    <h3><span id="errorText"></span></h3>
+  </div>
+
+  <div id="locationErrorMessage" class='hidden'>
+    <h3><span id="locationErrorText"></span></h3>
+  </div>
+
+  <section id="about">
+    <h2>What is Chattr?</h2>
+    <p>Chattr is a real-time application that allows you to share and read overheard thoughts from your local area. 
+      Be careful though! They only stick around for 24 hours!</p>
+    <h3>Created by Tommy Delp for IGME-430 @ RIT</h3>
+  </section>
+</footer>
 </html>
