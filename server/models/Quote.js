@@ -49,6 +49,8 @@ QuoteSchema.index({ location: '2dsphere' });
 
 QuoteSchema.statics.findByLocation = (longitude, latitude, callback) => {
   // Mongoose has built-in tools for location-based objects.
+    // Used tutorial for help with generating this search query: 
+    // https://medium.com/@galford151/mongoose-geospatial-queries-with-near-59800b79c0f6
   const search = {
     location: {
       $near: {
